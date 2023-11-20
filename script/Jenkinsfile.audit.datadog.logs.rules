@@ -1,0 +1,28 @@
+properties(
+    [
+        instanceType('t3.medium'),
+        instanceCustomLabel("unit-standard")
+    ]
+)
+
+node('unit-standard') {
+    withEnv(["HOME=$WORKSPACE"]) {
+        @Library(["external-shared-pipelines", "team-shared-pipelines"]) _
+        def (git_commit, git_branch_unique, nodeploy) = gitOps(env.BRANCH_NAME)
+
+        stage('Audit Rules') {
+            withCredentials([
+                    [$class: 'StringBinding', credentialsId: 'TEAM_NOTIFY_ROOM_ID', variable: 'TEAM_NOTIFY_ROOM_ID'],
+                    [$class: 'StringBinding', credentialsId: 'webex-teams-team-bot-access-token', variable: 'TEAM_NOTIFY_WEBEX_TOKEN'],
+                    [$class: 'StringBinding', credentialsId: 'JENKINS_DATADOG_API_KEY', variable: 'JENKINS_DATADOG_API_KEY'],
+                    [$class: 'StringBinding', credentialsId: 'JENKINS_DATADOG_APP_KEY', variable: 'JENKINS_DATADOG_APP_KEY']
+            ]) {
+                sh '''
+                    pip3 install --user -r modules/audit_datadog_logs_rules/requirements.txt
+                    python3 modules/audit_datadog_logs_rules/audit_dd_exclusion_filters_of_indexed_logs.py --api-key "${JENKINS_DATADOG_API_KEY}" --app-key "${JENKINS_DATADOG_APP_KEY}" --webex-token "${TEAM_NOTIFY_WEBEX_TOKEN}" --room-id "${TEAM_NOTIFY_ROOM_ID}"
+                '''
+            }
+        }
+    }
+}
+
