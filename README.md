@@ -30,3 +30,6 @@ Conclusion:
 Effective FinOps practices are essential for managing costs in a cloud-centric environment. By implementing the above practices, your organization can strike a balance between visibility and cost, ensuring that logs are both comprehensive and cost-effective. Regularly review and refine your log management strategy to adapt to the evolving needs of your applications and business, ultimately maximizing the value derived from DataDog Cloud.
 
 # Diagrams
+![_finops_1.png](doc%2F_finops_1.png)
+
+![_finops_2.png](doc%2F_finops_2.png)
